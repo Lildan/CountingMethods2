@@ -9,8 +9,6 @@ type SystemRungeKuttaMethod struct {
 	tau  float64
 	eps  float64
 	epsM float64
-	y10  float64
-	y20  float64
 
 	y1 float64
 	y2 float64
@@ -28,7 +26,16 @@ type SystemRungeKuttaMethod struct {
 	tauH float64
 }
 
-func (m SystemRungeKuttaMethod) Start() {
+func (m SystemRungeKuttaMethod) Start(t0 float64, T float64, eps float64, epsM float64, tau float64, y10 float64, y20 float64) {
+	m.t = t0
+	m.T = T
+	m.tau = tau
+	m.eps = eps
+	m.epsM = epsM
+	m.y1 = y10
+	m.y2 = y20
+	m.Step2()
+	return
 
 }
 
