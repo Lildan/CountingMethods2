@@ -6,21 +6,22 @@
       COMMON/STCOM2/HUSED,NQUSED
       COMMON/STCOM3/ML,MU
       COMMON/STCOM4/NSTEP,NFUN,NJAC
-      NYDIM=3
+      NYDIM=10
       EPS=1.D-2
       KB=0
 401   CONTINUE
-      N=3
+      N=4
       T=0.0D0
-      TEND=1.D0
+      TEND=20.D0
       Y(1,1)=1.D0
-      Y(2,1)=0.D0
-      Y(3,1)=0.D0
-      H=3.3D-8
+      Y(2,1)=1.D0
+      Y(3,1)=1.D0
+      Y(4,1)=1.D0
+      H=1.D-1
       HMAX=TEND
       HMIN=1.D-15
       JSTART=0
-      MF=21
+      MF=12
       MAXORD=5
       WRITE(0,20) MF,EPS
 20    FORMAT(//3X,'MF=',I2/,' EPS='D11.3)
@@ -60,24 +61,33 @@
       SUBROUTINE DIFFUN (N,T,Y,YDOT)
       IMPLICIT REAL*8 (A-H,O-Z)
       DIMENSION Y(1),YDOT(1)
-      YDOT(1)=-Y(1)+100000000.D0*Y(3)*(1.D0-Y(1))
-      YDOT(2)=-10.D0*Y(2)+30000000.D0*Y(3)*(1.D0-Y(2))
-      YDOT(3)=-YDOT(1)-YDOT(2)
+      YDOT(1)=-Y(1)+Y(2)*Y(2)+Y(3)*Y(3)+Y(4)*Y(4)
+      YDOT(2)=-10.D0*Y(2)+10.D0*(Y(3)*Y(3)+Y(4)*Y(4))
+      YDOT(3)=-40.D0*Y(3)+40.D0*Y(4)*Y(4)
+      YDOT(4)=-100.0D0*Y(4)+2
       RETURN
       END
       SUBROUTINE PEDERV(N,T,Y,PW,NYDIM)
       IMPLICIT REAL*8 (A-H,O-Z)
       DIMENSION Y(1),PW(1)
-      PW(1)=-1.0D0-10.D0*Y(3)
+      PW(1)=-1.0D0
       PW(2)=0.D0
-      PW(3)=1.D0+100000000.D0*Y(3)
-      PW(NYDIM+1)=0.D0
-      PW(NYDIM+2)=-10.D0-30000000.D0*Y(3)
-      PW(NYDIM+3)=10.D0+30000000.D0*Y(3)
+      PW(3)=0.D0
+      PW(4)=0.D0
+      PW(NYDIM+1)=2.0D0*Y(2)
+      PW(NYDIM+2)=-1.0D1
+      PW(NYDIM+3)=0.D0
+      PW(NYDIM+4)=0.D0
       N2=NYDIM*2
-      PW(N2+1)=100000000.D0*(1.D0-Y(1))
-      PW(N2+2)=30000000.D0*(1.D0-Y(2))
-      PW(N2+3)=-100000000.D0*(1.D0-Y(1))-30000000.D0*(1.D0-Y(2))
+      PW(N2+1)=2.0D0*Y(3)
+      PW(N2+2)=2.0D1*Y(3)
+      PW(N2+3)=-40.D0
+      PW(N2+4)=0.D0
+      N2=NYDIM*3
+      PW(N2+1)=2.0D0*Y(4)
+      PW(N2+2)=2.0D1*Y(4)
+      PW(N2+3)=8.0D1*Y(4)
+      PW(N2+4)=-1.0D2
       RETURN
       END
       SUBROUTINE STIFF(Y,YMAX,ERROR,PW,FSAVE,IWORK,NYDIM)
